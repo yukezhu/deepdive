@@ -369,7 +369,7 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
 
     val du = new DataUnloader
     val groundingPath = if (!parallelGrounding) Context.outputDir else dbSettings.gppath
-
+    
     // check whether Greenplum is used
     var usingGreenplum = false
     issueQuery(checkGreenplumSQL) { rs => 
