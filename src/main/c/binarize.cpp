@@ -92,6 +92,7 @@ void load_factor(std::string filename, short funcid, long nvar, char** positives
   std::ofstream fout((filename + "_factors.bin").c_str(), std::ios::binary | std::ios::out);
   std::ofstream fedgeout((filename + "_edges.bin").c_str(), std::ios::binary | std::ios::out);
 
+  // cout << factid << endl;
   long factorid = 0;
   long weightid = 0;
   long variableid = 0;
@@ -189,7 +190,13 @@ int main(int argc, char** argv){
     load_weight(argv[2]);
   }
   if(app.compare("factor")==0){
-    load_factor(argv[2], atoi(argv[3]), atoi(argv[4]), &argv[5], atol(argv[6]));
+    cout << argv[2] << endl;
+    cout << atoi(argv[3]) << endl;
+    cout << atoi(argv[4]) << endl;
+    cout << &argv[6] << endl;
+    cout << atol(argv[5])<< endl;
+    cout << "index " << argv[5] << endl;
+    load_factor(argv[2], atoi(argv[3]), atoi(argv[4]), &argv[6], atol(argv[5]));
   }
   return 0;
 }

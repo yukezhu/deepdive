@@ -32,8 +32,8 @@ for l in open(INPUTFOLDER + "/factormeta"):
 
 
   print "BINARIZE ", factor_name, "..."
-  print ('ls ' + INPUTFOLDER + '/tmp | egrep "^factors_' + factor_name + '_out"  | awk \'{s+=CHUNKSIZE} {} {print $0 " " s - CHUNKSIZE}\' | xargs -P 40 -n 2 sh -c \'' + transform_script + ' factor ' + INPUTFOLDER + '/tmp/$0 ' + function_id + ' ' + nvars + ' ' + (' '.join(positives)) + ' $1 ' + ' \' | awk \'{s+=$1} END {print s}\' >>' + INPUTFOLDER + "/nedges_")
-  os.system('ls ' + INPUTFOLDER + '/tmp | egrep "^factors_' + factor_name + '_out"  | awk \'{s+=CHUNKSIZE} {} {print $0 " " s - CHUNKSIZE}\' | xargs -P 40 -n 2 sh -c \'' + transform_script + ' factor ' + INPUTFOLDER + '/tmp/$0 ' + function_id + ' ' + nvars + ' ' + (' '.join(positives)) + ' $1 ' + ' \' | awk \'{s+=$1} END {print s}\' >>' + INPUTFOLDER + "/nedges_")
+  print ('ls ' + INPUTFOLDER + '/tmp | egrep "^factors_' + factor_name + '_out"  | awk \'{s+=CHUNKSIZE} {} {print $0 " " s - CHUNKSIZE}\' | xargs -P 40 -n 2 sh -c \'' + transform_script + ' factor ' + INPUTFOLDER + '/tmp/$0 ' + function_id + ' ' + nvars + ' ' + ' $1 ' + (' '.join(positives)) + ' \' | awk \'{s+=$1} END {print s}\' >>' + INPUTFOLDER + "/nedges_")
+  os.system('ls ' + INPUTFOLDER + '/tmp | egrep "^factors_' + factor_name + '_out"  | awk \'{s+=CHUNKSIZE} {} {print $0 " " s - CHUNKSIZE}\' | xargs -P 40 -n 2 sh -c \'' + transform_script + ' factor ' + INPUTFOLDER + '/tmp/$0 ' + function_id + ' ' + nvars + ' ' + ' $1 ' + (' '.join(positives)) + ' \' | awk \'{s+=$1} END {print s}\' >>' + INPUTFOLDER + "/nedges_")
 
 # handle variables
 for f in os.listdir(INPUTFOLDER):
@@ -84,11 +84,11 @@ os.system("cat {0}/factors/factors*factors.bin > {1}/graph.factors".format(INPUT
 os.system("cat {0}/factors/factors*edges.bin > {1}/graph.edges".format(INPUTFOLDER, OUTPUTFOLDER))
 
 
-# clean up folder
-os.system('rm -rf {0}/nedges_'.format(INPUTFOLDER))
-os.system('rm -rf {0}/tmp'.format(INPUTFOLDER))
-os.system('rm -rf {0}/variables'.format(INPUTFOLDER))
-os.system('rm -rf {0}/factors'.format(INPUTFOLDER))
-os.system('rm -rf {0}/factors*'.format(INPUTFOLDER))
-os.system('rm -rf {0}/variables*'.format(INPUTFOLDER))
-os.system('rm -rf {0}/weights'.format(INPUTFOLDER))
+# # clean up folder
+# os.system('rm -rf {0}/nedges_'.format(INPUTFOLDER))
+# os.system('rm -rf {0}/tmp'.format(INPUTFOLDER))
+# os.system('rm -rf {0}/variables'.format(INPUTFOLDER))
+# os.system('rm -rf {0}/factors'.format(INPUTFOLDER))
+# os.system('rm -rf {0}/factors*'.format(INPUTFOLDER))
+# os.system('rm -rf {0}/variables*'.format(INPUTFOLDER))
+# os.system('rm -rf {0}/weights'.format(INPUTFOLDER))
