@@ -27,10 +27,13 @@ for l in open(INPUTFOLDER + "/factormeta"):
   nvars = '%d' % len(positives)
 
   print "SPLITTING", factor_name, "..."
+  print ('split -a 10 -l ' + CHUNKSIZE + ' ' + INPUTFOLDER + '/factors_' + factor_name + '_out ' + INPUTFOLDER + '/tmp/factors_' + factor_name + '_out')
   os.system('split -a 10 -l ' + CHUNKSIZE + ' ' + INPUTFOLDER + '/factors_' + factor_name + '_out ' + INPUTFOLDER + '/tmp/factors_' + factor_name + '_out')
 
+
   print "BINARIZE ", factor_name, "..."
-  os.system('ls ' + INPUTFOLDER + '/tmp | egrep "^factors_' + factor_name + '_out"  | xargs -P 40 -I {} -n 1 sh -c \'' + transform_script + ' factor ' + INPUTFOLDER + '/tmp/{} ' + function_id + ' ' + nvars + ' ' + (' '.join(positives)) + ' \' | awk \'{s+=$1} END {print s}\' >>' + INPUTFOLDER + "/nedges_")
+  print ('ls ' + INPUTFOLDER + '/tmp | egrep "^factors_' + factor_name + '_out"  | xargs -P 40 -I {} -n 1 sh -c \'' + transform_script + ' factor ' + INPUTFOLDER + '/tmp/{} ' + function_id + ' ' + nvars + ' ' + (' '.join(positives)) + ' \' | awk \'{s+=$1} END {print s}\' >>' + INPUTFOLDER + "/nedges_")
+  os.system('ls ' + INPUTFOLDER + '/tmp | egrep "^factors_' + factor_name + '_out"  | awk '{s+=CHUNKSIZE} {} {print $0 " " s - CHUNKSIZE}' | xargs -P 40 -n 2 sh -c \'' + transform_script + ' factor ' + INPUTFOLDER + '/tmp/$0 ' + function_id + ' ' + nvars + ' ' + (' '.join(positives)) + ' $1 ' + ' \' | awk \'{s+=$1} END {print s}\' >>' + INPUTFOLDER + "/nedges_")
 
 # handle variables
 for f in os.listdir(INPUTFOLDER):

@@ -87,12 +87,12 @@ void load_weight(std::string filename){
 
 // load factors
 // fid, wid, vids
-void load_factor(std::string filename, short funcid, long nvar, char** positives){
+void load_factor(std::string filename, short funcid, long nvar, char** positives, long factid){
   std::ifstream fin(filename.c_str());
   std::ofstream fout((filename + "_factors.bin").c_str(), std::ios::binary | std::ios::out);
   std::ofstream fedgeout((filename + "_edges.bin").c_str(), std::ios::binary | std::ios::out);
 
-  long factorid = 0;
+  long factorid = factid;
   long weightid = 0;
   long variableid = 0;
   long nedge = 0;
@@ -115,10 +115,10 @@ void load_factor(std::string filename, short funcid, long nvar, char** positives
     string field;
     istringstream ss(line);
 
-    // factor id
-    getline(ss, field, field_delim);
-    factorid = atol(field.c_str());
-    factorid = bswap_64(factorid);
+    // // factor id
+    // getline(ss, field, field_delim);
+    // factorid = atol(field.c_str());
+    // factorid = bswap_64(factorid);
     
     // weightid
     getline(ss, field, field_delim);
@@ -169,7 +169,7 @@ void load_factor(std::string filename, short funcid, long nvar, char** positives
         position++;
       }
     }
-
+    factorid ++;
   }
 
   std::cout << nedge << std::endl;
@@ -188,7 +188,7 @@ int main(int argc, char** argv){
     load_weight(argv[2]);
   }
   if(app.compare("factor")==0){
-    load_factor(argv[2], atoi(argv[3]), atoi(argv[4]), &argv[5]);
+    load_factor(argv[2], atoi(argv[3]), atoi(argv[4]), &argv[5], atol(argv[6]));
   }
   return 0;
 }
