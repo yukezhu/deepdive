@@ -92,7 +92,7 @@ void load_factor(std::string filename, short funcid, long nvar, char** positives
   std::ofstream fout((filename + "_factors.bin").c_str(), std::ios::binary | std::ios::out);
   std::ofstream fedgeout((filename + "_edges.bin").c_str(), std::ios::binary | std::ios::out);
 
-  long factorid = factid;
+  long factorid = 0;
   long weightid = 0;
   long variableid = 0;
   long nedge = 0;
@@ -118,7 +118,8 @@ void load_factor(std::string filename, short funcid, long nvar, char** positives
     // // factor id
     // getline(ss, field, field_delim);
     // factorid = atol(field.c_str());
-    // factorid = bswap_64(factorid);
+    factorid = factid;
+    factorid = bswap_64(factorid);
     
     // weightid
     getline(ss, field, field_delim);
@@ -169,7 +170,7 @@ void load_factor(std::string filename, short funcid, long nvar, char** positives
         position++;
       }
     }
-    factorid ++;
+    factid ++;
   }
 
   std::cout << nedge << std::endl;
