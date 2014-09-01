@@ -259,7 +259,7 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
   """
 
   def createMappedWeightsViewSQL = s"""
-    CREATE VIEW ${VariableResultTable}_mapped_weights AS
+    CREATE VIEW dd_mapped_weights AS
     SELECT ${WeightsTable}.*, ${WeightResultTable}.weight FROM
     ${WeightsTable} JOIN ${WeightResultTable} ON ${WeightsTable}.id = ${WeightResultTable}.id
     ORDER BY abs(weight) DESC;
@@ -508,6 +508,10 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
         CREATE SEQUENCE ${factoridSequence} MINVALUE -1 START 0;""") 
     }
 
+    // create result table
+    execute(createInferenceResultSQL)
+    execute(createInferenceResultWeightsSQL)
+
     // ground weights and factors
     factorDescs.zipWithIndex.foreach { case (factorDesc, idx) =>
       // id columns
@@ -515,6 +519,7 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
       val querytable = s"dd_query_${factorDesc.name}"
       val weighttableForThisFactor = s"dd_weights_${factorDesc.name}"
       val outfile = s"factors_${factorDesc.name}_out"
+      val mappedWeightsView = s"dd_mapped_weights_${factorDesc.name}"
 
       // table of input query
       execute(s"""DROP TABLE IF EXISTS ${querytable} CASCADE;
@@ -522,14 +527,14 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
       execute(s"""ALTER TABLE ${querytable} ADD COLUMN id bigint;""")
 
       // handle factor id
-      if (usingGreenplum) {
-        executeQuery(s"SELECT fast_seqassign('${querytable}', ${factorid});");
-      } else {
-        execute(s"UPDATE ${querytable} SET id = nextval('${factoridSequence}');")
-      }
-      issueQuery(s"""SELECT COUNT(*) FROM ${querytable};""") { rs =>
-        factorid += rs.getLong(1)
-      }
+      // if (usingGreenplum) {
+      //   executeQuery(s"SELECT fast_seqassign('${querytable}', ${factorid});");
+      // } else {
+      //   execute(s"UPDATE ${querytable} SET id = nextval('${factoridSequence}');")
+      // }
+      // issueQuery(s"""SELECT COUNT(*) FROM ${querytable};""") { rs =>
+      //   factorid += rs.getLong(1)
+      // }
 
       // weight variable list
       val weightlist = factorDesc.weight.variables.map(v => s""" "${v}" """).mkString(",")
@@ -586,6 +591,13 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
             s"""SELECT t0.id AS factor_id, t1.id AS weight_id, ${idcols}
              FROM ${querytable} t0, ${weighttableForThisFactor} t1
              WHERE ${weightjoinlist};""")
+
+          // mapped view
+          execute(s"""DROP VIEW IF EXISTS ${mappedWeightsView} CASCADE;
+            CREATE VIEW ${mappedWeightsView} AS 
+            SELECT ${idcols}, t1.id AS weightid, t1.isfixed, t1.initvalue, t2.weight
+            FROM ${querytable} t0, ${weighttableForThisFactor} t1, ${WeightResultTable} t2
+            WHERE ${weightjoinlist} AND t1.id = t2.id;""")
         }
       }
 
@@ -679,9 +691,9 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
     du.unload("weights", s"${groundingPath}/weights",dbSettings, parallelGrounding,
       s"SELECT id, isfixed, initvalue FROM ${WeightsTable}")
 
-    // create inference result table
-    execute(createInferenceResultSQL)
-    execute(createInferenceResultWeightsSQL)
+    // // create inference result table
+    // execute(createInferenceResultSQL)
+    // execute(createInferenceResultWeightsSQL)
 
     // split grounding files and transform to binary format
     log.info("Converting grounding file format...")
@@ -708,19 +720,16 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
 
   }
 
-  def bulkCopyWeights(weightsFile: String) : Unit
-  def bulkCopyVariables(variablesFile: String) : Unit
+  def bulkCopyWeights(weightsFile: String, dbSettings: DbSettings) : Unit
+  def bulkCopyVariables(variablesFile: String, dbSettings: DbSettings) : Unit
 
   def writebackInferenceResult(variableSchema: Map[String, _ <: VariableDataType],
-    variableOutputFile: String, weightsOutputFile: String, parallelGrounding: Boolean) = {
-
-    execute(createInferenceResultSQL)
-    execute(createInferenceResultWeightsSQL)
+    variableOutputFile: String, weightsOutputFile: String, parallelGrounding: Boolean, dbSettings: DbSettings) = {
 
     log.info("Copying inference result weights...")
-    bulkCopyWeights(weightsOutputFile)
+    bulkCopyWeights(weightsOutputFile, dbSettings)
     log.info("Copying inference result variables...")
-    bulkCopyVariables(variableOutputFile)
+    bulkCopyVariables(variableOutputFile, dbSettings)
     log.info("Creating indicies on the inference result...")
     execute(createInferenceResultIndiciesSQL)
 
