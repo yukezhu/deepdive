@@ -126,7 +126,7 @@ void load_factor(std::string filename, short funcid, long nvar, char** positives
     getline(ss, field, field_delim);
     weightid = atol(field.c_str());
     weightid = bswap_64(weightid);
-
+    // cerr << factorid << "\t" << weightid << endl;
     fout.write((char *)&factorid, 8);
     fout.write((char *)&weightid, 8);
     fout.write((char *)&funcid, 2);
@@ -190,12 +190,9 @@ int main(int argc, char** argv){
     load_weight(argv[2]);
   }
   if(app.compare("factor")==0){
-    cout << argv[2] << endl;
-    cout << atoi(argv[3]) << endl;
-    cout << atoi(argv[4]) << endl;
-    cout << &argv[6] << endl;
-    cout << atol(argv[5])<< endl;
-    cout << "index " << argv[5] << endl;
+    // cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+    // cerr << argv[2] << "\t" << atol(argv[5]) << endl;
+    // cerr << "index " << argv[5] << endl;
     load_factor(argv[2], atoi(argv[3]), atoi(argv[4]), &argv[6], atol(argv[5]));
   }
   return 0;
