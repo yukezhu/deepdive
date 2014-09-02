@@ -593,11 +593,16 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
              WHERE ${weightjoinlist};""")
 
           // mapped view
+          // execute(s"""DROP VIEW IF EXISTS ${mappedWeightsView} CASCADE;
+          //   CREATE VIEW ${mappedWeightsView} AS 
+          //   SELECT t0.${idcols}, t1.weightlist, t1.id AS weightid, t1.isfixed, t1.initvalue, t2.weight
+          //   FROM ${querytable} t0, ${weighttableForThisFactor} t1, ${WeightResultTable} t2
+          //   WHERE ${weightjoinlist} AND t1.id = t2.id;""")
           execute(s"""DROP VIEW IF EXISTS ${mappedWeightsView} CASCADE;
             CREATE VIEW ${mappedWeightsView} AS 
-            SELECT ${idcols}, t1.id AS weightid, t1.isfixed, t1.initvalue, t2.weight
-            FROM ${querytable} t0, ${weighttableForThisFactor} t1, ${WeightResultTable} t2
-            WHERE ${weightjoinlist} AND t1.id = t2.id;""")
+            SELECT t1.${weightlist}, t1.id AS weightid, t1.isfixed, t1.initvalue, t2.weight
+            FROM ${weighttableForThisFactor} t1, ${WeightResultTable} t2
+            WHERE t1.id = t2.id;""")
         }
       }
 
@@ -739,9 +744,7 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
       case Array(relation, column) => (relation, column)
     }
 
-    if (!parallelGrounding) {
-      execute(createMappedWeightsViewSQL)
-    }
+    execute(createMappedWeightsViewSQL)
 
     relationsColumns.foreach { case(relationName, columnName) =>
       execute(createInferenceViewSQL(relationName, columnName))
