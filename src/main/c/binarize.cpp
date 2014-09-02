@@ -120,11 +120,14 @@ void load_factor(std::string filename, short funcid, long nvar, char** positives
     // getline(ss, field, field_delim);
     // factorid = atol(field.c_str());
     factorid = factid;
+    cerr << factorid << "\t";
+    factid ++;
     factorid = bswap_64(factorid);
     
     // weightid
     getline(ss, field, field_delim);
     weightid = atol(field.c_str());
+    cerr << weightid << endl;
     weightid = bswap_64(weightid);
     // cerr << factorid << "\t" << weightid << endl;
     fout.write((char *)&factorid, 8);
@@ -171,7 +174,6 @@ void load_factor(std::string filename, short funcid, long nvar, char** positives
         position++;
       }
     }
-    factid ++;
   }
 
   std::cout << nedge << std::endl;
