@@ -551,7 +551,7 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
           execute(s"""INSERT INTO ${WeightsTable}(id, isfixed, initvalue) 
             VALUES (${cweightid}, ${isFixed}::int, ${initvalue});""")
           du.unload(s"${outfile}", s"${groundingPath}/${outfile}", dbSettings, parallelGrounding,
-            s"SELECT id AS factor_id, ${cweightid} AS weight_id, ${idcols} FROM ${querytable}")
+            s"SELECT ${cweightid} AS weight_id, ${idcols} FROM ${querytable}")
 
           // handle weight id and factor id
           cweightid += 1
@@ -641,7 +641,7 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
             SELECT * FROM ${weighttableForThisFactor};""")
 
           du.unload(s"${outfile}", s"${groundingPath}/${outfile}", dbSettings, parallelGrounding,
-            s"SELECT id AS factor_id, ${cweightid} AS weight_id, ${idcols} FROM ${querytable}")
+            s"SELECT ${cweightid} AS weight_id, ${idcols} FROM ${querytable}")
 
           // increment weight id
           issueQuery(s"""SELECT COUNT(*) FROM ${weighttableForThisFactor};""") { rs =>
@@ -680,7 +680,7 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
           // dump factors
           val weightjoinlist = factorDesc.weight.variables.map(v => s""" t0."${v}" = t1."${v}" """).mkString("AND")
           du.unload(s"${outfile}", s"${groundingPath}/${outfile}", dbSettings, parallelGrounding,
-            s"""SELECT t0.id AS factor_id, t1.id AS weight_id, ${idcols}
+            s"""SELECT t1.id AS weight_id, ${idcols}
              FROM ${querytable} t0, ${weighttableForThisFactor} t1
              WHERE ${weightjoinlist} AND t1.cardinality = '${cardinalityKey}';""")
         }
