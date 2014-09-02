@@ -7,6 +7,7 @@
 import sys
 import re
 import os
+import commands
 
 # set up parameters
 CHUNKSIZE = '10000000'
@@ -20,6 +21,7 @@ os.system('mkdir -p ' + INPUTFOLDER + "/tmp")
 os.system('rm -rf ' + INPUTFOLDER + "/nedges_")
 
 
+idx = 0
 # handle factors
 for l in open(INPUTFOLDER + "/factormeta"):
   (factor_name, function_id, positives) = l.split('\t')
@@ -32,8 +34,11 @@ for l in open(INPUTFOLDER + "/factormeta"):
 
 
   print "BINARIZE ", factor_name, "..."
-  print ('ls ' + INPUTFOLDER + '/tmp | egrep "^factors_' + factor_name + '_out"  | awk \'{s+=CHUNKSIZE} {} {print $0 " " s - CHUNKSIZE}\' | xargs -P 40 -n 2 sh -c \'' + transform_script + ' factor ' + INPUTFOLDER + '/tmp/$0 ' + function_id + ' ' + nvars + ' ' + ' $1 ' + (' '.join(positives)) + ' \' | awk \'{s+=$1} END {print s}\' >>' + INPUTFOLDER + "/nedges_")
-  os.system('ls ' + INPUTFOLDER + '/tmp | egrep "^factors_' + factor_name + '_out"  | awk \'{s+=CHUNKSIZE} {} {print $0 " " s - CHUNKSIZE}\' | xargs -P 40 -n 2 sh -c \'' + transform_script + ' factor ' + INPUTFOLDER + '/tmp/$0 ' + function_id + ' ' + nvars + ' ' + ' $1 ' + (' '.join(positives)) + ' \' | awk \'{s+=$1} END {print s}\' >>' + INPUTFOLDER + "/nedges_")
+  print ('ls ' + INPUTFOLDER + '/tmp | egrep \"^factors_' + factor_name + '_out\" | awk \'{ss+= ' + CHUNKSIZE + '} {print $0 ' '  ss +' + str(idx - int(CHUNKSIZE)) + '}\' | xargs -P 40 -n 2 sh -c \'' + transform_script + ' factor ' + INPUTFOLDER + '/tmp/$0 ' + function_id + ' ' + nvars + ' ' + ' $1 ' + (' '.join(positives)) + '\' | awk \'{sss+=$1} END {print sss}\' >>' + INPUTFOLDER + "/nedges_")
+  os.system('ls ' + INPUTFOLDER + '/tmp | egrep \"^factors_' + factor_name + '_out\" | awk \'{ss+= ' + CHUNKSIZE + '} {print $0 \" \"  ss +' + str(idx - int(CHUNKSIZE)) + '}\' | xargs -P 40 -n 2 sh -c \'' + transform_script + ' factor ' + INPUTFOLDER + '/tmp/$0 ' + function_id + ' ' + nvars + ' ' + ' $1 ' + (' '.join(positives)) + '\' | awk \'{sss+=$1} END {print sss}\' >>' + INPUTFOLDER + "/nedges_")
+  print INPUTFOLDER
+  idx += int(commands.getstatusoutput('wc -l ' + INPUTFOLDER + '/factors_' + factor_name + '_out')[1].split()[0])
+  print "LINE NUMBER : %d" % idx
 
 # handle variables
 for f in os.listdir(INPUTFOLDER):
@@ -84,11 +89,11 @@ os.system("cat {0}/factors/factors*factors.bin > {1}/graph.factors".format(INPUT
 os.system("cat {0}/factors/factors*edges.bin > {1}/graph.edges".format(INPUTFOLDER, OUTPUTFOLDER))
 
 
-# # clean up folder
-# os.system('rm -rf {0}/nedges_'.format(INPUTFOLDER))
-# os.system('rm -rf {0}/tmp'.format(INPUTFOLDER))
-# os.system('rm -rf {0}/variables'.format(INPUTFOLDER))
-# os.system('rm -rf {0}/factors'.format(INPUTFOLDER))
-# os.system('rm -rf {0}/factors*'.format(INPUTFOLDER))
-# os.system('rm -rf {0}/variables*'.format(INPUTFOLDER))
-# os.system('rm -rf {0}/weights'.format(INPUTFOLDER))
+# clean up folder
+os.system('rm -rf {0}/nedges_'.format(INPUTFOLDER))
+os.system('rm -rf {0}/tmp'.format(INPUTFOLDER))
+os.system('rm -rf {0}/variables'.format(INPUTFOLDER))
+os.system('rm -rf {0}/factors'.format(INPUTFOLDER))
+os.system('rm -rf {0}/factors*'.format(INPUTFOLDER))
+os.system('rm -rf {0}/variables*'.format(INPUTFOLDER))
+os.system('rm -rf {0}/weights'.format(INPUTFOLDER))
