@@ -588,7 +588,7 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
           // dump factors
           val weightjoinlist = factorDesc.weight.variables.map(v => s""" t0."${v}" = t1."${v}" """).mkString("AND")
           du.unload(s"${outfile}", s"${groundingPath}/${outfile}", dbSettings, parallelGrounding,
-            s"""SELECT t0.id AS factor_id, t1.id AS weight_id, ${idcols}
+            s"""SELECT t1.id AS weight_id, ${idcols}
              FROM ${querytable} t0, ${weighttableForThisFactor} t1
              WHERE ${weightjoinlist};""")
 
