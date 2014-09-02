@@ -92,7 +92,6 @@ void load_factor(std::string filename, short funcid, long nvar, char** positives
   std::ofstream fout((filename + "_factors.bin").c_str(), std::ios::binary | std::ios::out);
   std::ofstream fedgeout((filename + "_edges.bin").c_str(), std::ios::binary | std::ios::out);
 
-  // cout << factid << endl;
   long factorid = 0;
   long weightid = 0;
   long variableid = 0;
@@ -120,16 +119,13 @@ void load_factor(std::string filename, short funcid, long nvar, char** positives
     // getline(ss, field, field_delim);
     // factorid = atol(field.c_str());
     factorid = factid;
-    cerr << factorid << "\t";
     factid ++;
     factorid = bswap_64(factorid);
     
     // weightid
     getline(ss, field, field_delim);
     weightid = atol(field.c_str());
-    cerr << weightid << endl;
     weightid = bswap_64(weightid);
-    // cerr << factorid << "\t" << weightid << endl;
     fout.write((char *)&factorid, 8);
     fout.write((char *)&weightid, 8);
     fout.write((char *)&funcid, 2);
@@ -192,9 +188,6 @@ int main(int argc, char** argv){
     load_weight(argv[2]);
   }
   if(app.compare("factor")==0){
-    // cerr << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-    // cerr << argv[2] << "\t" << atol(argv[5]) << endl;
-    // cerr << "index " << argv[5] << endl;
     load_factor(argv[2], atoi(argv[3]), atoi(argv[4]), &argv[6], atol(argv[5]));
   }
   return 0;
