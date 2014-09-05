@@ -524,7 +524,7 @@ trait SQLInferenceDataStore extends InferenceDataStore with Logging {
       // table of input query
       execute(s"""DROP TABLE IF EXISTS ${querytable} CASCADE;
         CREATE TABLE ${querytable} AS ${factorDesc.inputQuery};""")
-      execute(s"""ALTER TABLE ${querytable} ADD COLUMN id bigint;""")
+      // execute(s"""ALTER TABLE ${querytable} ADD COLUMN id bigint;""")
 
       // handle factor id
       // if (usingGreenplum) {
