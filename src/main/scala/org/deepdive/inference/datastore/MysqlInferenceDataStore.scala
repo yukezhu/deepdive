@@ -237,7 +237,7 @@ trait MysqlInferenceDataStoreComponent extends SQLInferenceDataStoreComponent {
      * Inference view is very slow in MySQL so we create indexes on id, 
      * and materialize this table for future queries (e.g. calibration)
      * 
-     * Note: "CREATE INDEX ${indexName}" clause can only handle non-text/blob type columns.
+     * Note: "CREATE INDEX indexName" clause can only handle non-text/blob type columns.
      */
     override def createInferenceViewSQL(relationName: String, columnName: String) = {
       val indexName = s"${relationName}_id_idx"

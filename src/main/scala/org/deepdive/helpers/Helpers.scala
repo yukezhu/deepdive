@@ -21,7 +21,7 @@ object Helpers extends Logging {
   /**
    * Get the dbtype from DbSettings
    * 
-   * @returns 
+   * @return 
    *     Helpers.Psql 
    *     or
    *     Helpsers.Mysql

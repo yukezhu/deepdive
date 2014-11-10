@@ -4,6 +4,7 @@ import akka.actor._
 import akka.pattern.{ask, pipe}
 import akka.util.Timeout
 import java.io.{File, OutputStream, InputStream, PrintWriter, BufferedWriter, OutputStreamWriter, Writer}
+import scala.language.postfixOps
 import ProcessExecutor._
 import scala.collection.mutable.ArrayBuffer
 import scala.concurrent._
