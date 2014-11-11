@@ -19,18 +19,23 @@ TEST_PORT = 4000
 .PHONY: test
 test:
 	# Launching a server for testing...
-	jekyll serve --host localhost --port $(TEST_PORT) --baseurl "" --watch
+	jekyll serve --host localhost --port $(TEST_PORT) --baseurl "" --watch &
+
+.PHONY: testscala
+testscala: serve scaladoc
 
 .PHONY: serve
 serve:
 	# Launching a server and detach it to background
 	jekyll serve --host localhost --port $(TEST_PORT) --baseurl "" --detach
 
-.PHONY: deploy
-deploy:
-	@echo "Note that deploying will clean up previous files on site."
+.PHONY: build
 	# Building site...
 	jekyll build
+
+.PHONY: deploy
+deploy: build scaladoc
+	@echo "Note that deploying will clean up previous files on site."
 	# Deploying site...
 	@echo "[DANGEROUS!] Will delete all files in $(DEPLOY_USER_HOST):$(DEPLOY_DIR)"
 	ssh $(DEPLOY_USER_HOST) rm -rf $(DEPLOY_DIR)/*
@@ -75,5 +80,16 @@ help:
 	@echo '    DEPLOY_USER=[yourUserName] make deploy'
 	@echo ''
 	@echo 'where [yourUserName] is your account to log into our server that hosts deepdive.'
+
+.PHONY: scaladoc
+scaladoc:
+	# Must run after a "build" or "serve"
+	cd ..; sbt/sbt doc
+	@echo "Scala doc has been compiled into `cd ..; pwd`/target/scala-2.10/api/"
+	mkdir -p _site/doc/
+	rm -rf _site/doc/api/
+	cp -r ../target/scala-2.10/api _site/doc/
+	@echo "Scala doc has been placed into `pwd`/_site/doc/api/"
+
 
 .DEFAULT_GOAL:= help

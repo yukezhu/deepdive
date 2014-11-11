@@ -140,3 +140,6 @@ Advanced topics:
 - [Internal database schema](doc/advanced/reserved_tables.html)
 - [Factor graph grounding output reference](doc/advanced/factor_graph_schema.html)
 
+API doc:
+
+- [DeepDive API in ScalaDoc](doc/api/)
