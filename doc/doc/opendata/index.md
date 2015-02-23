@@ -12,9 +12,24 @@ applications](http://deepdive.stanford.edu). Often, these applications are inter
 Our work would not be possible without open data. As a result, our group decided to enhance as many [Creative Commons
 datasets](http://creativecommons.org/) as we can find. Below, we describe the data format and provide a small list of data sets in this page. We plan to process more data sets and to provide richer data as well (extracted entities and relationships). Feel free to contact us to suggest more open data sets to process. 
 
+<div class="panel panel-default" style="position:relative;">
+  <div class="panel-heading">Acknowledgement</div>
 
-**Acknowledgement.** We would like to thank the HTCondor research group and the Center for High Throughput Computing (CHTC) at the University of Wisconsin-Madison, who have provided millions of machine hours to our group. Thank you, Miron Livny. We would also like to thank the Stanford Natural Language Processing Group, whose tools we use in many of our applications. DeepDive is also generously supported by [our
+<a href="http://chtc.cs.wisc.edu/">
+<img src="http://chtc.cs.wisc.edu/images/CHTC-logo.png" style="height:188px;"/></a>
+
+<a href="http://research.cs.wisc.edu/htcondor/">
+<img src="http://research.cs.wisc.edu/htcondor/images/white_bird_logo.png" style="height:188px;"/></a>
+
+<a href="http://nlp.stanford.edu/software/corenlp.shtml">
+<img src="http://nlp.stanford.edu/img/nlp-logo-navbar.jpg" style="height:188px;"/></a>
+
+<p>  
+We would like to thank the HTCondor research group and the Center for High Throughput Computing (CHTC) at the University of Wisconsin-Madison, who have provided millions of machine hours to our group. Thank you, Miron Livny. We would also like to thank the Stanford Natural Language Processing Group, whose tools we use in many of our applications. DeepDive is also generously supported by [our
 sponsors](http://deepdive.stanford.edu/doc/support.html).
+</p>
+</div>
+
 
 ### Data Format (NLP Markups)
 
@@ -76,7 +91,7 @@ Each dataset is versioned with date, and with the MD5 checksum in the file name.
       <span class="label label-warning">&gt;</span>
       <span class="label label-info">STRIP (html2text)</span>
       <span class="label label-warning">&gt;</span>
-      <span class="label label-info">NLP (Stanford CoreNLP)</span>
+      <span class="label label-info">NLP (Stanford CoreNLP 1.3.4)</span>
       </p>
 
       </td>
@@ -139,7 +154,7 @@ Information obtained at [Jan 27, 2015](http://www.ncbi.nlm.nih.gov/pmc/tools/ope
       <span class="label label-warning">&gt;</span>
       <span class="label label-info">STRIP (html2text)</span>
       <span class="label label-warning">&gt;</span>
-      <span class="label label-info">NLP (Stanford CoreNLP)</span>
+      <span class="label label-info">NLP (Stanford CoreNLP 1.3.4)</span>
 
       </td>
     <tr>
@@ -230,7 +245,7 @@ Information obtained at [Jan 27, 2015](http://www.biomedcentral.com/about).
       <span class="label label-warning">&gt;</span>
       <span class="label label-info">OCR (Tesseract)</span>
       <span class="label label-warning">&gt;</span>
-      <span class="label label-info">NLP (Stanford CoreNLP)</span>
+      <span class="label label-info">NLP (Stanford CoreNLP 1.3.4)</span>
       </p>
 
       </td>
@@ -288,7 +303,7 @@ Information obtained at [Jan 26, 2015](http://www.plosone.org/static/license).
       <td colspan=3>
       <span class="label label-info">OCR'ed Text</span> 
       <span class="label label-warning">&gt;</span>
-      <span class="label label-info">NLP (Stanford CoreNLP)</span>
+      <span class="label label-info">NLP (Stanford CoreNLP 1.3.4)</span>
       </td>
     <tr>
       <th> Size </th>  <td> 229 GB </td>
@@ -334,6 +349,70 @@ CC BY-NC-SA 4.0 license.
 Information obtained at [Jan 26, 2015](http://biodivlib.wikispaces.com/Licensing+and+Copyright).
 </i>
 
+
+
+
+## PATENT (Google Patents)
+
+<div class="panel panel-default" style="position:relative;">
+  <div style="position:absolute; left: -20px; top: -30px;">
+   <img src="/images/coming_soon.png" style="width:200px;">
+  </div>
+  <div class="panel-heading">Quick Statistics & Downloads</div>
+  <table class="table">
+    <tr>
+      <th> Pipeline </th> 
+      <td colspan=3>
+
+      <span class="label label-info">OCR'ed Text</span>
+      <span class="label label-warning">&gt;</span>
+      <span class="label label-info">NLP (Stanford CoreNLP 3.5.1)</span>
+
+      </td>
+    <tr>
+      <th> Size </th>  <td> 428 GB </td>
+      <th> Document Type </th> <td> Government Document </td>
+    </tr>
+    <tr>
+      <th> # Documents </th>  <td> 2,437,000 </td>
+      <th> # Machine Hours </th> <td> 100 K </td>
+    </tr>
+    <tr>
+      <th> # Sentences </th>  <td> 248 Million </td>
+      <th> # Words </th>  <td> 7.7 Billion </td>
+    </tr>
+    <tr>
+      <th> Downloads </th> <td colspan="3"> 
+        <div class="btn-group" text-aligh="right">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false"> Download Full Corpus <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <!--<li><a href="#">DeepDive-ready DB Dump</a></li>-->
+            <li><a href="#">CoNLL-format Markups</a></li>
+          </ul>
+        </div>
+        <div class="btn-group" text-aligh="right">
+          <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown" aria-expanded="false"> Download Small Teaser <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#">DeepDive-ready DB Dump</a></li>
+            <li><a href="#">CoNLL-format Markups</a></li>
+          </ul>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+
+We plan to have
+DeepDive's PATENT Corpus to contain a full snapshot 
+of patent grants since 1920 from the United States Patent and Trademark Office (USPTO), European Patent Office (EPO), and World Intellectual Property Organization (WIPO),
+indexed by Google Patents in Feb 2015.
+
+<i>
+<img src="http://mirrors.creativecommons.org/presskit/buttons/88x31/png/publicdomain.png" style="width:88px;"/> Patent applications we processed belong to the public domain.
+Information obtained at [Jan 27, 2015](http://en.wikipedia.org/wiki/Google_Patents).
+</i>
 
 
 ## WIKI (Wikipedia)
@@ -398,72 +477,6 @@ of Wikipedia in Jan 2015.
 <img src="http://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-sa.png" style="width:88px;"/> Wikipedia
 applies CC BY-SA 3.0 Unported license.
 Information obtained at [Jan 27, 2015](http://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License).
-</i>
-
-
-
-## PATENT (Google Patents)
-
-<div class="panel panel-default" style="position:relative;">
-  <div style="position:absolute; left: -20px; top: -30px;">
-   <img src="/images/coming_soon.png" style="width:200px;">
-  </div>
-  <div class="panel-heading">Quick Statistics & Downloads</div>
-  <table class="table">
-    <tr>
-      <th> Pipeline </th> 
-      <td colspan=3>
-
-      <span class="label label-info">PDF</span> 
-      <span class="label label-warning">&gt;</span>
-      <span class="label label-info">OCR (Tesseract)</span>
-      <span class="label label-warning">&gt;</span>
-      <span class="label label-info">NLP (Stanford CoreNLP)</span>
-
-      </td>
-    <tr>
-      <th> Size </th>  <td> - </td>
-      <th> Document Type </th> <td> Government Document </td>
-    </tr>
-    <tr>
-      <th> # Documents </th>  <td> - </td>
-      <th> # Machine Hours </th> <td> - </td>
-    </tr>
-    <tr>
-      <th> # Sentences </th>  <td> - </td>
-      <th> # Words </th>  <td> - </td>
-    </tr>
-    <tr>
-      <th> Downloads </th> <td colspan="3"> 
-        <div class="btn-group" text-aligh="right">
-          <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown" aria-expanded="false"> Download Full Corpus <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">DeepDive-ready DB Dump</a></li>
-            <li><a href="#">CoNLL-format Markups</a></li>
-          </ul>
-        </div>
-        <div class="btn-group" text-aligh="right">
-          <button type="button" class="btn btn-primary dropdown-toggle disabled" data-toggle="dropdown" aria-expanded="false"> Download Small Teaser <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">DeepDive-ready DB Dump</a></li>
-            <li><a href="#">CoNLL-format Markups</a></li>
-          </ul>
-        </div>
-      </td>
-    </tr>
-  </table>
-</div>
-
-We plan to have
-DeepDive's PATENT Corpus to contain a full snapshot 
-of patent applications from the United States Patent and Trademark Office (USPTO), European Patent Office (EPO), and World Intellectual Property Organization (WIPO),
-indexed by Google Patents in Jan 2015.
-
-<i>
-<img src="http://mirrors.creativecommons.org/presskit/buttons/88x31/png/publicdomain.png" style="width:88px;"/> Patent applications we processed belong to the public domain.
-Information obtained at [Jan 27, 2015](http://en.wikipedia.org/wiki/Google_Patents).
 </i>
 
 
