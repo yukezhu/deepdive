@@ -12,9 +12,12 @@ INPUTFOLDER=$1
 transform_script=$2
 OUTPUTFOLDER=$3
 
-rm -rf "$INPUTFOLDER"/dd_tmp
-mkdir -p "$INPUTFOLDER"/dd_tmp
-rm -rf "$INPUTFOLDER"/nedges_
+(
+cd "$INPUTFOLDER"
+
+rm -rf dd_tmp
+mkdir -p dd_tmp
+rm -rf nedges_
 
 # handle factors
 while IFS=$'\t' read factor_name function_id positives; do
@@ -28,70 +31,73 @@ while IFS=$'\t' read factor_name function_id positives; do
     done
 
     echo "SPLITTING ${factor_name}..."
-    split -a 10 -l $CHUNKSIZE "$INPUTFOLDER"/dd_factors_${factor_name}_out "$INPUTFOLDER"/dd_tmp/dd_factors_${factor_name}_out
+    split -a 10 -l $CHUNKSIZE dd_factors_${factor_name}_out dd_tmp/dd_factors_${factor_name}_out
 
     echo "BINARIZE ${factor_name}..."
-    ls "$INPUTFOLDER"/dd_tmp |
+    ls dd_tmp |
     egrep "^dd_factors_${factor_name}_out" |
     xargs -P 40 -I {} -n 1 \
-      "$transform_script" factor "$INPUTFOLDER"/dd_tmp/{} ${function_id} ${nvars} ${_args} |
-    awk '{s+=$1} END {printf "%.0f\n", s}' >>"$INPUTFOLDER"/dd_nedges_
-done <"$INPUTFOLDER"/dd_factormeta
+        "$transform_script" factor dd_tmp/{} ${function_id} ${nvars} ${_args} |
+    awk '{s+=$1} END {printf "%.0f\n", s}' >>dd_nedges_
+done <dd_factormeta
 
 
 # handle variables
-for f in "$INPUTFOLDER"/dd_variables_*; do
+for f in dd_variables_*; do
     echo "SPLITTING ${f}..."
-    split -a 10 -l $CHUNKSIZE "$INPUTFOLDER"/"${f}" "$INPUTFOLDER"/dd_tmp/"${f}"
+    split -a 10 -l $CHUNKSIZE "${f}" dd_tmp/"${f}"
 
     echo "BINARIZE ${f}..."
-    ls "$INPUTFOLDER"/dd_tmp | egrep "^${f}" |
+    ls dd_tmp | egrep "^${f}" |
     xargs -P 40 -I {} -n 1 \
-      "$transform_script" variable "$INPUTFOLDER"/dd_tmp/{}
+        "$transform_script" variable dd_tmp/{}
 done
 
 # handle weights
 echo "BINARIZE weights..."
-"$transform_script" weight "$INPUTFOLDER"/dd_weights
+"$transform_script" weight dd_weights
 
 # move files
-rm -rf "$INPUTFOLDER"/dd_factors
-mkdir -p "$INPUTFOLDER"/dd_factors
-mv "$INPUTFOLDER"/dd_tmp/dd_factors*.bin "$INPUTFOLDER"/dd_factors
+rm -rf dd_factors
+mkdir -p dd_factors
+mv dd_tmp/dd_factors*.bin dd_factors/
 
-rm -rf "$INPUTFOLDER"/dd_variables
-mkdir -p "$INPUTFOLDER"/dd_variables
-mv "$INPUTFOLDER"/dd_tmp/dd_variables*.bin "$INPUTFOLDER"/dd_variables
+rm -rf dd_variables
+mkdir -p dd_variables
+mv dd_tmp/dd_variables*.bin dd_variables/
 
 # counting
 nfactor_files=0
 nvariable_files=0
 echo "COUNTING variables..."
 echo $(
-        wc -l "$INPUTFOLDER"/dd_tmp/dd_variables_* | tail -n 1 |
+        wc -l dd_tmp/dd_variables_* | tail -n 1 |
         sed -e 's/^[ \t]*//g' |
         cut -d ' ' -f 1
-    ) + ${nvariable_files} | bc >"$INPUTFOLDER"/dd_nvariables
+    ) + ${nvariable_files} | bc >dd_nvariables
 
 echo "COUNTING factors..."
 echo $(
-        wc -l "$INPUTFOLDER"/dd_tmp/dd_factors_* | tail -n 1 |
+        wc -l dd_tmp/dd_factors_* | tail -n 1 |
         sed -e 's/^[ \t]*//g' |
         cut -d ' ' -f 1
-    ) + ${nvariable_files} | bc >"$INPUTFOLDER"/dd_nfactors
+    ) + ${nfactor_files} | bc >dd_nfactors
 
 echo "COUNTING weights..."
-wc -l "$INPUTFOLDER"/dd_tmp/dd_weights | tail -n 1 |
+wc -l dd_tmp/dd_weights | tail -n 1 |
 sed -e 's/^[ \t]*//g' |
-cut -d ' ' -f 1 >"$INPUTFOLDER"/dd_nweights
+cut -d ' ' -f 1 >dd_nweights
 
 # XXX echo "COUNTING edges..."
-awk '{{ sum += $1 }} END {{ printf "%.0f\n", sum }}' "$INPUTFOLDER"/dd_nedges_ >"$INPUTFOLDER"/dd_nedges
+awk '{{ sum += $1 }} END {{ printf "%.0f\n", sum }}' dd_nedges_ >dd_nedges
 
 # concatenate files
 echo "CONCATENATING FILES..."
-cat "$INPUTFOLDER"/dd_nweights "$INPUTFOLDER"/dd_nvariables "$INPUTFOLDER"/dd_nfactors "$INPUTFOLDER"/dd_nedges |
-tr '\n' ',' >"$INPUTFOLDER"/graph.meta
+cat dd_nweights dd_nvariables dd_nfactors dd_nedges |
+tr '\n' ',' >graph.meta
+
+)
+
 # XXX what the heck? why are we outputting outputfolder paths to input folder?
 echo "$OUTPUTFOLDER"/graph.weights,"$OUTPUTFOLDER"/graph.variables,"$OUTPUTFOLDER"/graph.factors,"$OUTPUTFOLDER"/graph.edges >>"$INPUTFOLDER"/graph.meta
 if [[ "$INPUTFOLDER" != "$OUTPUTFOLDER" ]]; then
