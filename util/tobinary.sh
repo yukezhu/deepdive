@@ -17,15 +17,15 @@ cd "$INPUTFOLDER"
 
 rm -rf dd_tmp
 mkdir -p dd_tmp
-rm -rf nedges_
+rm -rf dd_nedges_
 
 # handle factors
 while IFS=$'\t' read factor_name function_id positives; do
-    _args= nvars=0
+    _args=() nvars=0
     for p in $positives; do
         case $p in
-            true) _args+=1 ;;
-            false) _args+=0 ;;
+            true) _args+=(1) ;;
+            false) _args+=(0) ;;
         esac
         let ++nvars
     done
@@ -37,7 +37,7 @@ while IFS=$'\t' read factor_name function_id positives; do
     ls dd_tmp |
     egrep "^dd_factors_${factor_name}_out" |
     xargs -P 40 -I {} -n 1 \
-        "$transform_script" factor dd_tmp/{} ${function_id} ${nvars} ${_args} |
+        "$transform_script" factor dd_tmp/{} ${function_id} ${nvars} "${_args[@]}" |
     awk '{s+=$1} END {printf "%.0f\n", s}' >>dd_nedges_
 done <dd_factormeta
 
