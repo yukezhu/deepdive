@@ -67,39 +67,27 @@ mkdir -p dd_variables
 mv dd_tmp/dd_variables*.bin dd_variables/
 
 # counting
-nfactor_files=0
-nvariable_files=0
 echo "COUNTING variables..."
-echo $(
-        wc -l dd_tmp/dd_variables_* | tail -n 1 |
-        sed -e 's/^[ \t]*//g' |
-        cut -d ' ' -f 1
-    ) + ${nvariable_files} | bc >dd_nvariables
+nvariables=$(wc -l dd_tmp/dd_variables_* | tail -n 1 | awk '{print $1}')
 
 echo "COUNTING factors..."
-echo $(
-        wc -l dd_tmp/dd_factors_* | tail -n 1 |
-        sed -e 's/^[ \t]*//g' |
-        cut -d ' ' -f 1
-    ) + ${nfactor_files} | bc >dd_nfactors
+nfactors=$(wc -l dd_tmp/dd_factors_* | tail -n 1 | awk '{print $1}')
 
 echo "COUNTING weights..."
-wc -l dd_tmp/dd_weights | tail -n 1 |
-sed -e 's/^[ \t]*//g' |
-cut -d ' ' -f 1 >dd_nweights
+nweights=$(wc -l <dd_tmp/dd_weights)
 
-# XXX echo "COUNTING edges..."
-awk '{{ sum += $1 }} END {{ printf "%.0f\n", sum }}' dd_nedges_ >dd_nedges
+echo "COUNTING edges..."
+nedges=$(awk '{{ sum += $1 }} END {{ printf "%.0f\n", sum }}' dd_nedges_)
 
-# concatenate files
-echo "CONCATENATING FILES..."
-cat dd_nweights dd_nvariables dd_nfactors dd_nedges |
-tr '\n' ',' >graph.meta
+{
+    echo "$nweights,$nvariables,$nfactors,$nedges"
+    echo "$OUTPUTFOLDER"/graph.weights,"$OUTPUTFOLDER"/graph.variables,"$OUTPUTFOLDER"/graph.factors,"$OUTPUTFOLDER"/graph.edges
+} >graph.meta
 
 )
 
-# XXX what the heck? why are we outputting outputfolder paths to input folder?
-echo "$OUTPUTFOLDER"/graph.weights,"$OUTPUTFOLDER"/graph.variables,"$OUTPUTFOLDER"/graph.factors,"$OUTPUTFOLDER"/graph.edges >>"$INPUTFOLDER"/graph.meta
+# concatenate files
+echo "CONCATENATING FILES..."
 if [[ "$INPUTFOLDER" != "$OUTPUTFOLDER" ]]; then
     mv  "$INPUTFOLDER"/graph.meta                         "$OUTPUTFOLDER"/graph.meta
     mv  "$INPUTFOLDER"/dd_weights.bin                     "$OUTPUTFOLDER"/dd_weights
