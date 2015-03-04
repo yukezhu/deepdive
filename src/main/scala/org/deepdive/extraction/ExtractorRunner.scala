@@ -421,7 +421,22 @@ class ExtractorRunner(dataStore: JdbcDataStore, dbSettings: DbSettings) extends 
     delWriter.close()
     executeScriptOrFail(delTmpFile.getAbsolutePath(), taskSender)
 
-    // Helpers.executeCmd(delCmd) // This won't work because of escaping issues?
+    val maxParallel = task.extractor.parallelism
+
+    val udfRunScript = new File(queryOutputPath + s"exec_udf.sh")
+    val udfRunScriptWriter = new PrintWriter(udfRunScript)
+    val deepDiveDir = System.getProperty("user.dir")
+    udfRunScriptWriter.println(
+     // XXX UDF's stdout/err is muted here.
+     // TODO We need to spawn a separate thread to forward them to the log.
+     s"""
+     |exec </dev/null >/dev/null 2>/dev/null
+     |rm -f ${fpath}/${fname}
+     |${deepDiveDir}/util/run_parallel.sh ${fpath}/${fname} ${fpath}/${fname}- .out ${maxParallel} ${udfCmd} &
+     |""".stripMargin
+    )
+    udfRunScriptWriter.close()
+    executeScriptOrFail(udfRunScript.getAbsolutePath(), taskSender)
 
     try {
       dl.unload(fname, psqlFilePath, dbSettings, s"${inputQuery}", "")
@@ -433,33 +448,7 @@ class ExtractorRunner(dataStore: JdbcDataStore, dbSettings: DbSettings) extends 
         throw exception
     }
 
-    // Get the actually dumped file path
-    val actualDumpedPath = s"${fpath}/${fname}"
-    log.info(s"File dumped to ${actualDumpedPath}")
-    val splitPrefix = s"${actualDumpedPath}-"
-    val linesPerSplit = task.extractor.inputBatchSize
-    val splitCmd = s"split -a 10 -l ${linesPerSplit} " + actualDumpedPath + s" ${splitPrefix}"
-
-    log.info(s"Executing split command...")
-    executeScriptOrFail(splitCmd, taskSender)
-
-    val maxParallel = task.extractor.parallelism
-
-    // Note (msushkov): the extractor must take TSV as input and produce TSV as output
-    val runCmd = s"find ${fpath} -name '${fname}-*' 2>/dev/null -print0 | xargs -0 -P ${maxParallel} -L 1 bash -c '${udfCmd} " + "<" + " \"$0\" > \"$0.out\"'"
-
-    log.info(s"Executing parallel UDF command: ${runCmd}")
-    // executeScriptOrFail(runCmd, taskSender)
-
-    val udfTmpFile = new File(queryOutputPath + s"exec_parallel_udf.sh")
-    // val udfTmpFile = File.createTempFile(s"exec_parallel_udf", ".sh")
-    val writer = new PrintWriter(udfTmpFile)
-    writer.println(s"${runCmd}")
-    writer.close()
-    log.debug(s"Temporary UDF file saved to ${udfTmpFile.getAbsolutePath()}")
-    executeScriptOrFail(udfTmpFile.getAbsolutePath(), taskSender)
-
-    // Copy each of the files into the DB. If user is using Greenplum, use gpload (TODO)
+    // Copy each of the files into the DB. If user is using Greenplum, use gpload
 
     // If loader specified, use the chosen loader
     
@@ -504,7 +493,7 @@ class ExtractorRunner(dataStore: JdbcDataStore, dbSettings: DbSettings) extends 
     queryOutputPathDir.delete()
 
   }
-  
+
   /**
    * Run PLPY extractor
    */
