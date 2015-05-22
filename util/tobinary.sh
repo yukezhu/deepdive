@@ -20,14 +20,14 @@ rm -rf dd_nedges_
 
 # handle factors
 while IFS=$'\t' read factor_name function_id positives; do
-    _args=() nvars=0
+    _args=()
     for p in $positives; do
         case $p in
             true) _args+=(1) ;;
             false) _args+=(0) ;;
         esac
-        let ++nvars
     done
+    nvars=${#_args[@]}
 
     echo "SPLITTING ${factor_name}..."
     split -a 10 -l $CHUNKSIZE dd_factors_${factor_name}_out dd_tmp/dd_factors_${factor_name}_out
@@ -43,6 +43,7 @@ done <dd_factormeta
 
 # handle variables
 for f in dd_variables_*; do
+    [ -e "$f" ] || continue
     echo "SPLITTING ${f}..."
     split -a 10 -l $CHUNKSIZE "${f}" dd_tmp/"${f}"
 
@@ -59,24 +60,26 @@ echo "BINARIZE weights..."
 # move files
 rm -rf dd_factors
 mkdir -p dd_factors
-mv dd_tmp/dd_factors*.bin dd_factors/
+mv dd_tmp/dd_factors*.bin dd_factors/ || true
 
 rm -rf dd_variables
 mkdir -p dd_variables
-mv dd_tmp/dd_variables*.bin dd_variables/
+mv dd_tmp/dd_variables*.bin dd_variables/ || true
 
 # counting
 echo "COUNTING variables..."
 nvariables=$(wc -l dd_tmp/dd_variables_* | tail -n 1 | awk '{print $1}')
+: ${nvariables:=0}
 
 echo "COUNTING factors..."
 nfactors=$(wc -l dd_tmp/dd_factors_* | tail -n 1 | awk '{print $1}')
+: ${nfactors:=0}
 
 echo "COUNTING weights..."
-nweights=$(wc -l <dd_tmp/dd_weights)
+nweights=$(wc -l <dd_weights || echo 0)
 
 echo "COUNTING edges..."
-nedges=$(awk '{{ sum += $1 }} END {{ printf "%.0f\n", sum }}' dd_nedges_)
+nedges=$(awk '{{ sum += $1 }} END {{ printf "%.0f\n", sum }}' dd_nedges_ || echo 0)
 
 {
     echo "$nweights,$nvariables,$nfactors,$nedges"
@@ -88,12 +91,12 @@ nedges=$(awk '{{ sum += $1 }} END {{ printf "%.0f\n", sum }}' dd_nedges_)
 # concatenate files
 echo "CONCATENATING FILES..."
 if [[ "$INPUTFOLDER" != "$OUTPUTFOLDER" ]]; then
-    mv  "$INPUTFOLDER"/graph.meta                         "$OUTPUTFOLDER"/graph.meta
-    mv  "$INPUTFOLDER"/dd_weights.bin                     "$OUTPUTFOLDER"/dd_weights
-    cat "$INPUTFOLDER"/dd_variables/*                    >"$OUTPUTFOLDER"/graph.variables
-    cat "$INPUTFOLDER"/dd_factors/dd_factors*factors.bin >"$OUTPUTFOLDER"/graph.factors
-    cat "$INPUTFOLDER"/dd_factors/dd_factors*edges.bin   >"$OUTPUTFOLDER"/graph.edges
+    mv "$INPUTFOLDER"/graph.meta                      "$OUTPUTFOLDER"/graph.meta
 fi
+mv  "$INPUTFOLDER"/dd_weights.bin                     "$OUTPUTFOLDER"/dd_weights
+cat "$INPUTFOLDER"/dd_variables/*                    >"$OUTPUTFOLDER"/graph.variables || true
+cat "$INPUTFOLDER"/dd_factors/dd_factors*factors.bin >"$OUTPUTFOLDER"/graph.factors   || true
+cat "$INPUTFOLDER"/dd_factors/dd_factors*edges.bin   >"$OUTPUTFOLDER"/graph.edges     || true
 
 # clean up folder
 echo "Cleaning up files"
