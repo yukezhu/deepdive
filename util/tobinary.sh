@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # Script to convert grounding files in TSV format to binary format for dimmwitted sampler
-# (A direct rewrite of the python script tobinary.py)
 # Usage: tobinary.sh INPUTFOLDER transform_script OUTPUTFOLDER
 # It split the specific files in the input folder and for each of them calls the C++ binary to convert the format
 

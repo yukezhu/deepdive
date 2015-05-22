@@ -61,7 +61,7 @@ object InferenceNamespace {
 
   // converting format scripts
   val utilFolder = "util"
-  val formatConvertingScriptName = s"tobinary.py"
+  val formatConvertingScriptName = s"tobinary.sh"
   val formatConvertingWorkerName = s"""format_converter_${if (System.getProperty("os.name").startsWith("Linux")) 
     "linux" else "mac"}"""
 
