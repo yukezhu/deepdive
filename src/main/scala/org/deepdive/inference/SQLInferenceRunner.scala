@@ -390,7 +390,7 @@ trait SQLInferenceRunner extends InferenceRunner with Logging {
   def convertGroundingFormat(groundingPath: String) {
     log.info("Converting grounding file format...")
     // TODO: this python script is dangerous and ugly. It changes too many states!
-    val cmd = s"python ${InferenceNamespace.getFormatConvertingScriptPath} ${groundingPath} " +
+    val cmd = s"${InferenceNamespace.getFormatConvertingScriptPath} ${groundingPath} " +
         s"${InferenceNamespace.getFormatConvertingWorkerPath} ${Context.outputDir}"
     log.debug("Executing: " + cmd)
     val exitValue = cmd!(ProcessLogger(
